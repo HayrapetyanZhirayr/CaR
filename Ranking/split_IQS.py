@@ -41,6 +41,11 @@ def split_command() -> None:
         default=None,
     )
     parser.add_argument(
+        "--output",
+        help=("Output path"),
+        default=None,
+    )
+    parser.add_argument(
         "--num_workers",
         help="Number of workers to use when loading data.",
         type=int,
@@ -64,6 +69,7 @@ def split_command() -> None:
         with open(cfg.input, "r") as f:
             origent_data = json.load(f) 
     else:
+        raise ValueError("Provide Input!")
         with open("./data/alpaca_data.json", "r") as f:
             origent_data = json.load(f) 
 
@@ -99,11 +105,13 @@ def split_command() -> None:
 
     i = 0
     for instruction_pair in origent_data:
-        instruction_pair['score'] = seg_scores[i]
+        instruction_pair['score_IQS'] = seg_scores[i]
         i += 1
     
-    sorted_data = sorted(origent_data, key=lambda x: x['score'], reverse=True)
-    json.dump(sorted_data, open('./data/ranking_IQS_result.json', 'w'))    
+    # sorted_data = sorted(origent_data, key=lambda x: x['score'], reverse=True)
+    # json.dump(sorted_data, open('./data/ranking_IQS_result.json', 'w'))    
+    json.dump(origent_data, open(cfg.output, 'w'))    
+
 
 
 if __name__ == "__main__":
