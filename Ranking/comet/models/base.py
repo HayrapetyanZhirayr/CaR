@@ -618,7 +618,7 @@ class CometModel(ptl.LightningModule, metaclass=abc.ABCMeta):
             logger=False,
             callbacks=callbacks,
             accelerator=accelerator if gpus > 0 else "cpu",
-            strategy=None if gpus < 2 else "ddp",
+            strategy="auto" if gpus < 2 else "ddp",
             enable_progress_bar=enable_progress_bar,
         )
         return_predictions = False if gpus > 1 else True

@@ -18,7 +18,7 @@ optional arguments:
 """
 import json
 import os
-
+import pandas as pd
 import numpy as np
 from jsonargparse import ArgumentParser
 from jsonargparse.typing import Path_fr
@@ -66,8 +66,15 @@ def split_command() -> None:
 
     # Constructing input format of IQS model  
     if cfg.input is not None:
-        with open(cfg.input, "r") as f:
-            origent_data = json.load(f) 
+        if cfg.input.endswith(".jsonl"):
+            origent_data = []
+            with open(cfg.input, "r") as f:
+                for line in f:
+                    origent_data.append(json.loads(line))
+            origent_data = origent_data
+        else:
+            with open(cfg.input, "r") as f:
+                origent_data = json.load(f) 
     else:
         raise ValueError("Provide Input!")
         with open("./data/alpaca_data.json", "r") as f:
@@ -110,7 +117,13 @@ def split_command() -> None:
     
     # sorted_data = sorted(origent_data, key=lambda x: x['score'], reverse=True)
     # json.dump(sorted_data, open('./data/ranking_IQS_result.json', 'w'))    
-    json.dump(origent_data, open(cfg.output, 'w'))    
+    if cfg.output.endswith(".jsonl"):
+        with open(cfg.output, "w") as f:
+            for line in origent_data:
+                f.write(json.dumps(line))
+                f.write("\n")
+    else:
+        json.dump(origent_data, open(cfg.output, 'w'))    
 
 
 
